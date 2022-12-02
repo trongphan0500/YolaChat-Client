@@ -18,7 +18,9 @@ export const renameRoom = `${host}/api/room/renameRoom`;
 
 export const updateManager = `${host}/api/room/updateManager`;
 export const blockChat = `${host}/api/room/blockChat`;
-
+export const deleteRoom = `${host}/api/room/deleteRoom`;
+//Upload Avartar
+export const setAvartar = `${host}/api/messages/setAvartar`;
 //Image Send
 export const imageMessageSend = `${host}/api/messages/image-message-send`;
 //File Send
@@ -30,6 +32,8 @@ export const deleteMessageToAll = `${host}/api/messages/delete-message-toAll`;
 
 //Get User By PhoneNumber
 export const getUserByPhoneNumber = `${host}/api/friend/getUserByPhoneNumber`;
+//Get User By PhoneNumber or UserName
+export const getUserByPhoneNumberOrUserName = `${host}/api/friend/getUserByPhoneNumberOrUserName`;
 //Add Friend
 export const addFriend = `${host}/api/friend/addFriend`;
 //Get Current Friend
@@ -53,3 +57,6 @@ export const checkSendedRequestAddFriend = `${host}/api/requestFriend/checkSende
 
 // Cập nhập thông tin cá nhân
 export const updateUser = `${host}/api/auth/updateUser`;
+
+export const getnewMessages = `${host}/api/messages/getnewMessages`;
+export const getnewMessagesRoom = `${host}/api/messages/getnewMessagesRoom`;

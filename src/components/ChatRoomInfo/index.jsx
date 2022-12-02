@@ -246,15 +246,26 @@ export default function ChatRoomInfo() {
                     "2"
                 ),
                 getItem(
-                    <Button
-                        className="chat-room-info-btn-setting"
-                        type="text"
-                        icon={<CloseSquareOutlined />}
-                        onClick={handleDeleteGroup}
-                    >
-                        Giải tán nhóm
-                    </Button>,
-                    "3"
+                    <>
+                        {roomChat === undefined ? (
+                            <></>
+                        ) : (
+                            <>
+                                {user._id === roomChat.manager ? (
+                                    <Button
+                                        className="chat-room-info-btn-setting"
+                                        type="text"
+                                        icon={<CloseSquareOutlined />}
+                                        onClick={handleDeleteGroup}
+                                    >
+                                        Giải tán nhóm
+                                    </Button>
+                                ) : (
+                                    <></>
+                                )}
+                            </>
+                        )}
+                    </>
                 ),
             ]
         ),

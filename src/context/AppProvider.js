@@ -42,6 +42,10 @@ export default function AppProvider({ children }) {
     const [title, setTilte] = useState("Bạn có muốn đăng xuất khỏi Yola");
     const [listRequest, setListRequest] = useState([]);
     const [listSendedRequest, setListSendedRequest] = useState([]);
+    const [sendedRequest, setSendedRequst] = useState(true);
+    const [searchInListFriend, setSearchInListFriend] = useState([]);
+    const [listSearchInFriend, setListSearchInFriend] = useState([]);
+    const [listWait, setListWait] = useState([]);
 
     // const dropdownRef = useRef(null);
     // const [isActive, setIsActive] = useDetectOutsideClick(dropdownRef, false);
@@ -66,6 +70,17 @@ export default function AppProvider({ children }) {
     return (
         <AppContext.Provider
             value={{
+                setListWait,
+                listWait,
+                setListSearchInFriend,
+                // User Search trong danh sách bạn bè
+                listSearchInFriend,
+                setSearchInListFriend,
+                //Biến search trong danh sách bạn bè hiện tại
+                searchInListFriend,
+                //Danh sách các yêu cầu kết bạn đã gửi
+                setSendedRequst,
+                sendedRequest,
                 listSendedRequest,
                 setListSendedRequest,
                 //Danh sách yêu cầu kết bạn

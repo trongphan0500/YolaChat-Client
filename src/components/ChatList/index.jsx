@@ -8,6 +8,7 @@ import {
     getCurrentFriend,
     getAllCurrentFriend,
     host,
+    getnewMessages,
 } from "../../utils/APIRoutes";
 
 export default function ChatList({ contacts, changeChat, socket }) {
@@ -31,6 +32,53 @@ export default function ChatList({ contacts, changeChat, socket }) {
     useEffect(() => {
         setShowInfoRoom(false);
     }, [roomChat]);
+
+    useEffect(() => {
+        async function fetchData() {
+            const response = await axios.post(getCurrentFriend, {
+                currentUserId: currentUser._id,
+            });
+            const data = response.data.data2;
+            for (let i = 0; i < data.length; i++) {
+                console.log(user);
+                const respon = await axios.post(getnewMessages, {
+                    from: currentUser._id,
+                    to: data[i]._id,
+                });
+                console.log(respon);
+                if (respon.data) {
+                    data[i].newmess = respon.data.message;
+                    data[i].createdAt = respon.data.createdAt;
+                    data[i].fromSelf = respon.data.fromSelf;
+                    // console.log(respon.data);
+                } else {
+                    data[i].createdAt = "";
+                }
+            }
+            console.log(data);
+            setListCurrentFriend(data);
+
+            if (socket.current) {
+                socket.current.on("list-friend-add-into", async (data) => {
+                    console.log(data.data);
+                    const response = await axios.post(getCurrentFriend, {
+                        currentUserId: data.data,
+                    });
+                    console.log(response);
+                    setListCurrentFriend(response.data.data2);
+                });
+                socket.current.on("un-friend", async (data) => {
+                    console.log(data.data);
+                    const response = await axios.post(getCurrentFriend, {
+                        currentUserId: data.data,
+                    });
+                    console.log(response);
+                    setListCurrentFriend(response.data.data2);
+                });
+            }
+        }
+        fetchData();
+    }, []);
 
     useEffect(() => {
         async function fetchData() {
@@ -127,7 +175,7 @@ export default function ChatList({ contacts, changeChat, socket }) {
                                 </div>
                                 <div className="name">
                                     <h3>{contact.username}</h3>
-                                    <p>Hello</p>
+                                    <p>{contact.newmess}</p>
                                 </div>
                             </div>
                         );

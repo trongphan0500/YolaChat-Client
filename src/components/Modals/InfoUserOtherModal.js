@@ -35,13 +35,16 @@ export default function InfoUserOtherModal() {
         setListCurrentFriend,
         setCurrentChat,
         roomChat,
+        setListWait,
+        sendedRequest,
     } = useContext(AppContext);
     const socket = useRef();
 
     const handleCancel = () => {
         setIsInfoUserOtherModalOpen(false);
+        setListWait([]);
     };
-    const [listCurrentFriendPhone, setListCurrentFriendPhone] = [];
+
     const user = {
         displayName: "Trần Nguyễn Kha Vỹ",
         photoURL: "",
@@ -51,16 +54,29 @@ export default function InfoUserOtherModal() {
         isFriend: false,
         generalGroup: 3,
     };
-    const handleAddOrUnFriend = () => {
+    const handleAddOrUnFriend = async () => {
+        const listCurrentFriendPhone = [];
         listCurrentFriend.map((m, i) => {
             listCurrentFriendPhone.push(m.phonenumber);
         });
-        console.log(listCurrentFriend.indexOf(phoneNumber));
-        if (listCurrentFriend.indexOf(phoneNumber) === -1) {
+
+        if (listCurrentFriendPhone.indexOf(phoneNumber) === -1) {
             return true;
         }
         return false;
     };
+
+    const checkSendedReuestFriend = async () => {
+        const checkSended = await axios.post(checkSendedRequestAddFriend, {
+            senderId: currentUser.phonenumber,
+            received: phoneNumber,
+        });
+        setSendedRequst(checkSended.data);
+        console.log(sendedRequest);
+        if (sendedRequest === undefined || sendedRequest === "") return false;
+        return sendedRequest;
+    };
+
     const handleUnFriend = async () => {
         console.log("UnFriend");
 
@@ -79,13 +95,8 @@ export default function InfoUserOtherModal() {
             socket.current.emit("unfriend", {
                 to: userByPhoneNumber.data.data[0]._id,
             });
-
-            // const checkSended = await axios.post(checkSendedRequestAddFriend, {
-            //     senderId: currentUser.phonenumber,
-            //     received: userByPhoneNumber.data.data[0].phonenumber,
-            // });
-
-            // setSendedRequst(checkSended.data);
+            console.log(res.data.data2);
+            setSendedRequst(res.data.data2);
         } else {
             const userByPhoneNumber = await axios.post(getUserByPhoneNumber, {
                 phoneNumber: phoneNumber,
@@ -96,17 +107,17 @@ export default function InfoUserOtherModal() {
                 senderId: currentUser._id,
                 senderPhoneNumber: currentUser.phonenumber,
             });
-            // const checkSended = await axios.post(checkSendedRequestAddFriend, {
-            //     senderId: currentUser.phonenumber,
-            //     received: phoneNumber,
-            // });
-
-            // setSendedRequst(checkSended.data);
         }
+
         setCurrentChat(undefined);
         alert("Hủy kết bạn thành công");
         handleCancel();
     };
+
+    const handleInfoUser = () => {
+        console.log("alo");
+    };
+
     return (
         <div>
             <Modal
@@ -132,7 +143,7 @@ export default function InfoUserOtherModal() {
                                     <Avatar
                                         className="md-info-user-avt"
                                         size={70}
-                                        src={user.photoURL}
+                                        src={m.avatarImage}
                                     >
                                         {user.photoURL
                                             ? ""
@@ -154,15 +165,15 @@ export default function InfoUserOtherModal() {
                                         />
                                     </div>
                                     <div className="user-orther-btn">
-                                        {handleAddOrUnFriend ? (
+                                        {handleAddOrUnFriend() === true ? (
+                                            <Button type="text">Kết bạn</Button>
+                                        ) : (
                                             <Button
                                                 onClick={handleUnFriend}
                                                 type="text"
                                             >
                                                 Hủy kết bạn
                                             </Button>
-                                        ) : (
-                                            <Button type="text">Kết bạn</Button>
                                         )}
                                         <Button type="text">Nhắn tin</Button>
                                     </div>

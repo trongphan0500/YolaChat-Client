@@ -26,7 +26,8 @@ export default function AddFriendModal() {
     const {
         isAddFriendModalOpen,
         setIsAddFriendModalOpen,
-
+        sendedRequest,
+        setSendedRequst,
         setIsInfoUserModalOpen,
         setIsInfoUserOtherModalOpen,
         currentSearch,
@@ -40,6 +41,8 @@ export default function AddFriendModal() {
         setListRequest,
         listSendedRequest,
         setListSendedRequest,
+        listWait,
+        setListWait,
     } = useContext(AppContext);
     const data_loimoi = [
         {
@@ -51,8 +54,6 @@ export default function AddFriendModal() {
     const [data, setData] = useState([]);
     const [friend, setFriend] = useState([]);
     const [listCurrentFriend, setListCurrentFriend] = useState();
-    const [sendedRequest, setSendedRequst] = useState(true);
-    const [listWait, setListWait] = useState([]);
 
     const socket = useRef();
 
@@ -62,10 +63,20 @@ export default function AddFriendModal() {
     );
 
     useEffect(() => {
-        async function fetchData() {}
+        async function fetchData() {
+            console.log(currentUser.phonenumber);
+            console.log(phoneNumber);
+            const checkSended = await axios.post(checkSendedRequestAddFriend, {
+                senderId: currentUser.phonenumber,
+                received: phoneNumber,
+            });
+            setSendedRequst(checkSended.data);
+            console.log(checkSended.data);
+        }
         fetchData();
     }, []);
     const handleOk = async () => {
+        console.log(phoneNumber);
         const response = await axios.post(getUserByPhoneNumber, {
             currentUserId: currentUser._id,
             phoneNumber: phoneNumber,
@@ -115,6 +126,7 @@ export default function AddFriendModal() {
         } else {
             setIsInfoUserModalOpen(true);
             handleCancel();
+            setListWait([""]);
         }
         setListWait([""]);
     };
@@ -123,7 +135,7 @@ export default function AddFriendModal() {
         setIsAddFriendModalOpen(false);
         setData([]);
         setIsOpenNotify(true);
-        setPhoneNumber("");
+
         setListWait([]);
     };
     const addMembers = (user) => {
@@ -141,8 +153,7 @@ export default function AddFriendModal() {
         });
 
         socket.current = io(host);
-        console.log(response.data.data);
-        console.log(listRequest);
+
         socket.current.emit("send-request-add-friend", {
             response: response.data.data2,
             to: data._id,
@@ -170,6 +181,15 @@ export default function AddFriendModal() {
             currentPhoneNumber: phoneNumber,
             to: data._id,
         });
+    };
+    const handleInfoUser = async () => {
+        const response = await axios.post(getUserByPhoneNumber, {
+            currentUserId: currentUser._id,
+            phoneNumber: phoneNumber,
+        });
+        setCurrentSearch(response.data.data);
+        setIsInfoUserOtherModalOpen(true);
+        handleCancel();
     };
 
     return (
@@ -208,7 +228,11 @@ export default function AddFriendModal() {
                         ) : (
                             <Button className="contact" type="text">
                                 <div className="info">
-                                    <Avatar size={80} src={data.avatarImage}>
+                                    <Avatar
+                                        onClick={handleInfoUser}
+                                        size={80}
+                                        src={data.avatarImage}
+                                    >
                                         {data.avatarImage
                                             ? ""
                                             : data.username

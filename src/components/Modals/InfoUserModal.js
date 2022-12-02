@@ -6,7 +6,8 @@ import { EditOutlined } from "@ant-design/icons";
 import "./style.css";
 
 export default function InfoUserModal() {
-    const { setIsUpdateInfoUserModalOpen } = React.useContext(AppContext);
+    const { setIsUpdateInfoUserModalOpen, setListWait } =
+        React.useContext(AppContext);
     const { isInfoUserModalOpen, setIsInfoUserModalOpen, currentUser } =
         useContext(AppContext);
 
@@ -26,6 +27,7 @@ export default function InfoUserModal() {
 
     const handleCancel = () => {
         setIsInfoUserModalOpen(false);
+        setListWait([]);
     };
 
     const user = {

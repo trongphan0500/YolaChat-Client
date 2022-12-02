@@ -5,8 +5,14 @@ import bg_user_default from "../../assets/images/bg_user_default.jfif";
 import AvatarUploader from "react-avatar-uploader";
 import "./style.css";
 import { async } from "@firebase/util";
-import { updateUser } from "../../utils/APIRoutes";
+import { updateUser, setAvartar } from "../../utils/APIRoutes";
 import axios from "axios";
+
+import {
+    LinkOutlined,
+    PictureOutlined,
+    SmileOutlined,
+} from "@ant-design/icons";
 
 export default function UpdateInfoUserModal() {
     const {
@@ -14,8 +20,7 @@ export default function UpdateInfoUserModal() {
         setIsUpdateInfoUserModalOpen,
         currentUser,
     } = useContext(AppContext);
-
-    const [avartar, setAvartar] = useState();
+    const [avartarImage, setAvartarImage] = useState();
     const [userName, setUserName] = useState();
     const [gender, setGender] = useState();
     const [date, setDate] = useState();
@@ -28,6 +33,7 @@ export default function UpdateInfoUserModal() {
         console.log(typeof date);
         console.log(date);
         const response = await axios.post(updateUser, {
+            avatarImage: avartarImage,
             userName: userName,
             gender: gender === "nam" ? true : false,
             date: date,
@@ -47,8 +53,28 @@ export default function UpdateInfoUserModal() {
         setIsUpdateInfoUserModalOpen(false);
     };
     const handleSetAvartar = async (e) => {
-        // console.log(e);
-        // console.log("alo");
+        e.preventDefault();
+        if (e.target.files.length !== 0) {
+            let fileArray = e.target.files;
+            console.log(fileArray);
+            const formData = new FormData();
+            const imagesArray = [];
+            for (let i = 0; i < fileArray.length; i++) {
+                imagesArray.push(fileArray[i]);
+                formData.append("images", fileArray[i]);
+            }
+            const imageName = e.target.files[0].name;
+            const newImageName = Date.now() + imageName;
+            const file = URL.createObjectURL(e.target.files[0]);
+
+            formData.append("imageName", newImageName);
+
+            formData.append("file", file);
+
+            const response = await axios.post(setAvartar, formData);
+
+            setAvartarImage(response.data.data);
+        }
     };
     const handlePro = async (e, p) => {
         console.log(e);
@@ -81,18 +107,30 @@ export default function UpdateInfoUserModal() {
                                 user.photoURL ? user.photoURL : bg_user_default
                             }
                         />
-                        <AvatarUploader
-                            className="md-info-user-avt"
-                            size={70}
-                            src={
-                                currentUser !== null
-                                    ? currentUser.avatarImage
-                                    : ""
-                            }
-                            onStart={handleSetAvartar}
-                            onFinished={handlePro}
-                            uploadURL={updateUser}
-                        ></AvatarUploader>
+                        <input
+                            accept="image/x-png,image/gif,image/jpeg"
+                            multiple="multiple"
+                            onChange={handleSetAvartar}
+                            type="file"
+                            id="pic"
+                            style={{ width: 0, height: 0 }}
+                        ></input>
+                        <span style={{ width: 5 }}></span>
+                        <div className="btnfile">
+                            <label className="icon-btn" htmlFor="pic">
+                                <Image
+                                    src={
+                                        currentUser === null
+                                            ? ""
+                                            : currentUser.avatarImage === ""
+                                            ? "https://cdn-icons-png.flaticon.com/512/3426/3426639.png"
+                                            : currentUser.avatarImage
+                                    }
+                                    style={{ fontSize: "125%" }}
+                                />
+                            </label>
+                        </div>
+
                         {/* {user.photoURL ? (
                             <Avatar
                                 className="md-info-user-avt"

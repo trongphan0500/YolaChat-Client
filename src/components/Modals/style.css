@@ -162,3 +162,7 @@
     font-size: 16px;
     text-align: center;
 }
+.hide-in {
+    width: 0px;
+    height: 0px;
+}
